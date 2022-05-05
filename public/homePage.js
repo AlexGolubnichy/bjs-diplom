@@ -67,9 +67,10 @@ ApiConnector.getFavorites(response => {
         favorite.clearTable();
         favorite.fillTable(response.data);
         moneyManager.updateUsersList(response.data);
-        return moneyManager.setMessage(true, 'Добавлен новый пользователь #' + addUser.id + ': ' + addUser.name);
+        favoritesWidget.setMessage(true, 'Добавлен новый пользователь #' + addUser.id + ': ' + addUser.name);
+    } else {
+        favoritesWidget.setMessage(false, 'Ошибка: ' + response.error);
     }
-    return moneyManager.setMessage(false, 'Ошибка: ' + response.error);
 });
 
 favorite.removeUserCallback = deletedUser => ApiConnector.removeUserFromFavorites(deletedUser, response => {
@@ -77,7 +78,8 @@ favorite.removeUserCallback = deletedUser => ApiConnector.removeUserFromFavorite
         favorite.clearTable();
         favorite.fillTable(response.data);
         moneyManager.updateUsersList(response.data);
-        return moneyManager.setMessage(true, 'Пользователь ' + deletedUser + ' удален');
+        favoritesWidget.setMessage(true, 'Пользователь ' + deletedUser + ' удален');
+    } else {
+    favoritesWidget.setMessage(false, 'Ошибка: ' + response.error);
     }
-    return moneyManager.setMessage(false, 'Ошибка: ' + response.error);
 });
