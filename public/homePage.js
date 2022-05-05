@@ -30,7 +30,6 @@ const moneyManager = new MoneyManager();
 
 moneyManager.addMoneyCallback = credit => ApiConnector.addMoney(credit, response => {
     if (response.success) {
-        moneyManager.addMoneyAction();
         ProfileWidget.showProfile(response.data);
         return moneyManager.setMessage(true, 'Успешное пополнение счета на' + credit.currency + credit.amount);;
     }
@@ -39,7 +38,6 @@ moneyManager.addMoneyCallback = credit => ApiConnector.addMoney(credit, response
 
 moneyManager.conversionMoneyCallback = exchange => ApiConnector.convertMoney(exchange, response => {
     if (response.success) {
-        moneyManager.conversionMoneyAction();
         ProfileWidget.showProfile(response.data);
         return moneyManager.setMessage(true, 'Успешная конвертация суммы ' + exchange.fromCurrency + exchange.fromAmount);
     }
@@ -48,7 +46,6 @@ moneyManager.conversionMoneyCallback = exchange => ApiConnector.convertMoney(exc
 
 moneyManager.sendMoneyCallback = debit => ApiConnector.transferMoney(debit, response => {
     if (response.success) {
-        moneyManager.sendMoneyAction();
         ProfileWidget.showProfile(response.data);
         return moneyManager.setMessage(true, 'Успешный перевод ' + debit.currency + debit.amount + ' получателю ' + debit.to);
     }
