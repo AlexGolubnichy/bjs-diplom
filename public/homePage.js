@@ -3,14 +3,12 @@ const logout = new LogoutButton();
 logout.action = exit => ApiConnector.logout(response => {
     if (response.success) {
         location.reload();
-        return;
     }
 });
 
 ApiConnector.current(current => {
     if (current.success) {
         ProfileWidget.showProfile(current.data);
-        return;
     }
 });
 
@@ -20,47 +18,50 @@ function ratesUpdate() {
         if (response.success) {
             rates.clearTable();
             rates.fillTable(response.data);
-            return;
         }
     });
 }
-setInterval(ratesUpdate(), 60000);
 
-const pNt = new MoneyManager();
-pNt.addMoneyCallback = credit => ApiConnector.addMoney(credit, response => {
+ratesUpdate();
+setTimeout(ratesUpdate, 60000);
+
+
+const moneyManager = new MoneyManager();
+
+moneyManager.addMoneyCallback = credit => ApiConnector.addMoney(credit, response => {
     if (response.success) {
-        pNt.addMoneyAction();
+        moneyManager.addMoneyAction();
         ProfileWidget.showProfile(response.data);
-        return pNt.setMessage(true, 'Успешное пополнение счета на' + credit.currency + credit.amount);;
+        return moneyManager.setMessage(true, 'Успешное пополнение счета на' + credit.currency + credit.amount);;
     }
-    return pNt.setMessage(false, 'Ошибка: ' + response.error);
+    return moneyManager.setMessage(false, 'Ошибка: ' + response.error);
 });
 
-pNt.conversionMoneyCallback = exchange => ApiConnector.convertMoney(exchange, response => {
+moneyManager.conversionMoneyCallback = exchange => ApiConnector.convertMoney(exchange, response => {
     if (response.success) {
-        pNt.conversionMoneyAction();
+        moneyManager.conversionMoneyAction();
         ProfileWidget.showProfile(response.data);
-        return pNt.setMessage(true, 'Успешная конвертация суммы ' + exchange.fromCurrency + exchange.fromAmount);
+        return moneyManager.setMessage(true, 'Успешная конвертация суммы ' + exchange.fromCurrency + exchange.fromAmount);
     }
-    return pNt.setMessage(false, 'Ошибка: ' + response.error);
+    return moneyManager.setMessage(false, 'Ошибка: ' + response.error);
 });
 
-pNt.sendMoneyCallback = debit => ApiConnector.transferMoney(debit, response => {
+moneyManager.sendMoneyCallback = debit => ApiConnector.transferMoney(debit, response => {
     if (response.success) {
-        pNt.sendMoneyAction();
+        moneyManager.sendMoneyAction();
         ProfileWidget.showProfile(response.data);
-        return pNt.setMessage(true, 'Успешный перевод ' + debit.currency + debit.amount + ' получателю ' + debit.to);
+        return moneyManager.setMessage(true, 'Успешный перевод ' + debit.currency + debit.amount + ' получателю ' + debit.to);
     }
-    return pNt.setMessage(false, 'Ошибка: ' + response.error);
+    return moneyManager.setMessage(false, 'Ошибка: ' + response.error);
 });
 
 const favorite = new FavoritesWidget();
+
 ApiConnector.getFavorites(response => {
     if (response.success) {
         favorite.clearTable();
         favorite.fillTable(response.data);
-        pNt.updateUsersList(response.data);
-        return;
+        moneyManager.updateUsersList(response.data);
     }
  });
 
@@ -68,18 +69,18 @@ ApiConnector.getFavorites(response => {
     if (response.success) {
         favorite.clearTable();
         favorite.fillTable(response.data);
-        pNt.updateUsersList(response.data);
-        return pNt.setMessage(true, 'Добавлен новый пользователь #' + addUser.id + ': ' + addUser.name);
+        moneyManager.updateUsersList(response.data);
+        return moneyManager.setMessage(true, 'Добавлен новый пользователь #' + addUser.id + ': ' + addUser.name);
     }
-    return pNt.setMessage(false, 'Ошибка: ' + response.error);
+    return moneyManager.setMessage(false, 'Ошибка: ' + response.error);
 });
 
 favorite.removeUserCallback = deletedUser => ApiConnector.removeUserFromFavorites(deletedUser, response => {
     if (response.success) {
         favorite.clearTable();
         favorite.fillTable(response.data);
-        pNt.updateUsersList(response.data);
-        return pNt.setMessage(true, 'Пользователь ' + deletedUser + ' удален');
+        moneyManager.updateUsersList(response.data);
+        return moneyManager.setMessage(true, 'Пользователь ' + deletedUser + ' удален');
     }
-    return pNt.setMessage(false, 'Ошибка: ' + response.error);
+    return moneyManager.setMessage(false, 'Ошибка: ' + response.error);
 });
